@@ -1,0 +1,739 @@
+{
+  "name": "Apollo Lead Enrichment Flow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        -440
+      ],
+      "id": "b52933ca-0873-4c6c-950b-dc89d63a58d2",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0",
+          "mode": "list",
+          "cachedResultName": "NACS Names",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 901247523,
+          "mode": "list",
+          "cachedResultName": "NACS_Names_Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0/edit#gid=901247523"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Collected"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1020,
+        -440
+      ],
+      "id": "263634ee-f7ad-4fa2-80d4-e82495d62b6c",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgh5DNi0vt4b3jhE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7280d5d6-a50d-4516-93e2-c78b30bb558d",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            },
+            {
+              "id": "35e9dafd-df28-4ba6-b00a-12e17fc20444",
+              "name": "URL",
+              "value": "https://app.apollo.io/#/people?page=1&sortAscending=false&sortByField=recommendations_score&personTitles[]=marketing&contactEmailStatusV2[]=verified&organizationIds[]=",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        -500
+      ],
+      "id": "3d72a0c1-ac86-4086-b45b-abb6e09518d3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/v1/organizations/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "K4kuZ6MdS1UEUaYQFlgY5A"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q_organization_name\": \"={{$node[\\\"Execute previous nodes for preview\\\"]\",\n  \"page\": 1,\n  \"person_titles[]\": [\"marketing\"],\n  \"contact_email_status\": \"verified\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -600,
+        -620
+      ],
+      "id": "48d8cbf4-f412-4b08-a863-c4d00cb42ba2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bdb0fd1c-ee72-4523-9bd8-3be16381ebf0",
+              "leftValue": "model_ids[0]",
+              "rightValue": "={{ $json.model_ids[0] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -380,
+        -740
+      ],
+      "id": "c3c2c62d-bec4-48d7-aaec-31d5674c4e07",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0",
+          "mode": "list",
+          "cachedResultName": "NACS Names",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 901247523,
+          "mode": "list",
+          "cachedResultName": "NACS_Names_Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0/edit#gid=901247523"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "booth": "{{ $('Google Sheets3').item.json.booth }}",
+            "Collected": "Name Error"
+          },
+          "matchingColumns": [
+            "booth"
+          ],
+          "schema": [
+            {
+              "id": "Name Booth",
+              "displayName": "Name Booth",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "booth",
+              "displayName": "booth",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Collected",
+              "displayName": "Collected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -160,
+        -760
+      ],
+      "id": "d0e6f365-d005-4172-8f7b-32a3747fa256",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgh5DNi0vt4b3jhE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        140,
+        -980
+      ],
+      "id": "f9829ad2-25c3-474c-b582-c88d7e01c0af",
+      "name": "Wait",
+      "webhookId": "81ecccaf-71b8-4929-8cf9-8112d29364eb"
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        20,
+        -560
+      ],
+      "id": "583ff1fd-b497-4060-a947-d45b680f0fb5",
+      "name": "Wait1",
+      "webhookId": "caf4dbd0-e51f-4681-ada4-ca2909b7dc62"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/code_crafter~apollo-io-scraper/run-sync?token=apify_api_MhsFz4eaerAWKNnqjGhbNPY1AzLHww0cnNZL",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "key"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"getPersonalEmails\": true,\n  \"getWorkEmails\": true,\n  \"totalRecords\": 10,\n  \"url\": \"https://app.apollo.io/#/people?page=1&sortAscending=false&sortByField=recommendations_score&contactEmailStatus[]=verified&organizationIds[]=5a9e2e58a6da98d98c6c1f5f&personTitles[]=marketing\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        -460
+      ],
+      "id": "ad66e9af-042e-4f66-9d90-eea9947c4cbb",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1FDtE9fP-ZghlK4DYjCWR--IDH4wCb8Ioj20tYzK9rj4",
+          "mode": "list",
+          "cachedResultName": "Conference lead",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FDtE9fP-ZghlK4DYjCWR--IDH4wCb8Ioj20tYzK9rj4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1016742659,
+          "mode": "list",
+          "cachedResultName": "Conference_Lead_Gen_Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FDtE9fP-ZghlK4DYjCWR--IDH4wCb8Ioj20tYzK9rj4/edit#gid=1016742659"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "{{ $json.email }}",
+            "First": "{{ $json.first_name }}",
+            "Last": "{{ $json.last_name }}",
+            "Linkedin URL": "{{ $json.linkedin_url }}",
+            "Organization": "{{ $json.organization_name }}",
+            "Primary domain": "{{ $json.organization.twitter_url }}{{ $json.organization.facebook_url }}{{ $json.organization.linkedin_url }}",
+            "Number of Emp": "{{ $json.organization.estimated_num_employees }}",
+            "Organization Li": "{{ $json.organization.linkedin_url }}",
+            "Organization PI": "{{ $json.organization.primary_phone.number }}",
+            "Industry": "{{ $json.organization.industry }}",
+            "Address": "{{ $json.organization.raw_address }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First",
+              "displayName": "First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last",
+              "displayName": "Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin URL",
+              "displayName": "Linkedin URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Employment Info",
+              "displayName": "Employment Info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Organization",
+              "displayName": "Organization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Organizational PI",
+              "displayName": "Organizational PI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Primary domain",
+              "displayName": "Primary domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number of Emp",
+              "displayName": "Number of Emp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Organization Li",
+              "displayName": "Organization Li",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Organization PI",
+              "displayName": "Organization PI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        380,
+        -400
+      ],
+      "id": "13496a7a-aea6-4e16-9daf-4f55b904b71b",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgh5DNi0vt4b3jhE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0",
+          "mode": "list",
+          "cachedResultName": "NACS Names",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 901247523,
+          "mode": "list",
+          "cachedResultName": "NACS_Names_Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ncKwvWKUfSRroNGWBt1YLNELLmdavC4xMg0NqxouMr0/edit#gid=901247523"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "booth": "{{ $('Google Sheets3').item.json.booth }}",
+            "Collected": "Yes"
+          },
+          "matchingColumns": [
+            "booth"
+          ],
+          "schema": [
+            {
+              "id": "Name Booth",
+              "displayName": "Name Booth",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "booth",
+              "displayName": "booth",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Collected",
+              "displayName": "Collected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        540,
+        -240
+      ],
+      "id": "f93213db-ec8e-425b-b8d3-9b028c3914c3",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgh5DNi0vt4b3jhE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        -180
+      ],
+      "id": "e1ec108b-964e-4898-9641-dbd21cd75422",
+      "name": "Wait2",
+      "webhookId": "3d15b378-2a5a-41e5-ad0d-e6acc602c945"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e93553ef-b0ac-48b7-a61d-b5425f9d0616",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "13e20c97097a8d1de6d76dbd27c72163b6f6ec6e4a342023f3f77157e413842e"
+  },
+  "id": "8CC57udA0gViyZsc",
+  "tags": []
+}
