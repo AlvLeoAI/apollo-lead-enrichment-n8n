@@ -58,4 +58,4 @@ GOOGLE_SHEETS_CREDENTIALS_JSON=path/to/your/service-account.json
 
 ## 👨‍💻 Author
 
-AlvLeo X – Automation Specialist | Web3 | AI | Zapier/n8n/Make
+AlvLeo AI – Automation Specialist | Web3 | AI | Zapier/n8n/Make
